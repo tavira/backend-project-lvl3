@@ -7,6 +7,8 @@ install-deps:
 	npm install
 
 build:
+	npx eslint .
+	npm test
 	rm -rf dist
 	npm run build
 
@@ -17,6 +19,10 @@ lint:
 	npx eslint .
 
 publish:
+	npx eslint .
+	npm test
+	rm -rf dist
+	npm run build
 	npm publish --dry-run
 
 .PHONY: test
