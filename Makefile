@@ -13,7 +13,7 @@ build:
 	npm run build
 
 test:
-	npm test
+	npm test -- --coverage
 
 lint:
 	npx eslint .
