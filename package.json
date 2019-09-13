@@ -1,10 +1,10 @@
 {
   "name": "@tavira/page-loader",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "",
   "main": "dist/index.js",
   "bin": {
-    "tavira-page-loader": "dist/bin/cli.js"
+    "page-loader": "dist/bin/cli.js"
   },
   "engines": {
     "node": ">=8"
@@ -32,6 +32,8 @@
   "homepage": "https://github.com/tavira/backend-project-lvl3#readme",
   "dependencies": {
     "@babel/plugin-proposal-pipeline-operator": "^7.3.2",
+    "axios": "^0.19.0",
+    "commander": "^3.0.1",
     "gulp": "^4.0.0",
     "source-map-support": "^0.5.10"
   },
@@ -55,6 +57,7 @@
     "flow-typed": "^2.5.1",
     "gulp-babel": "^8.0.0",
     "jest": "^24.0.0",
-    "jest-cli": "^24.0.0"
+    "jest-cli": "^24.0.0",
+    "nock": "^11.3.3"
   }
 }
