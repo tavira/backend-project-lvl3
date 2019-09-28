@@ -27,7 +27,8 @@
     "url": "https://github.com/tavira/backend-project-lvl3/issues"
   },
   "jest": {
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "testPathIgnorePatterns": ["<rootDir>/__tests__/utils.js"]
   },
   "homepage": "https://github.com/tavira/backend-project-lvl3#readme",
   "dependencies": {
