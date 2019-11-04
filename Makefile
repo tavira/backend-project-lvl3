@@ -15,14 +15,16 @@ build:
 test:
 	npm test -- --coverage
 
+test-watch:
+	npm test -- --watch
+
 lint:
 	npx eslint .
 
-publish:
-	npx eslint .
-	npm test
-	rm -rf dist
-	npm run build
+publish: build
 	npm publish --dry-run
+
+install-app: publish
+	npm link
 
 .PHONY: test
