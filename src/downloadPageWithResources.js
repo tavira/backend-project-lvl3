@@ -63,7 +63,11 @@ const downloadPageWithResources = (url, dir = __dirname, httpClient) => {
         resourcesDirPathname,
         resourceLocalName,
       );
-      return fs.writeFile(resourcePathname, value.data);
+      return fs.writeFile(resourcePathname, value.data)
+        .then(() => {
+          console.info(`${value.config.url} downloaded`);
+          return null;
+        });
     }))
     .catch((e) => {
       throw new Error(e);
