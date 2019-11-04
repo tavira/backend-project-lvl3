@@ -4,6 +4,10 @@ import os from 'os';
 
 const getTmpFolderPath = async () => fs.mkdtemp(path.join(os.tmpdir(), '/'));
 
-const getFixtureFilename = pathFromFixtureFolder => path.resolve(__dirname, '..', '__fixtures__', pathFromFixtureFolder);
+const getFixture = fixtureDir => (
+  fixtureFilename => (
+    path.resolve(__dirname, '..', '__fixtures__', fixtureDir, fixtureFilename)
+  )
+);
 
-export { getTmpFolderPath, getFixtureFilename };
+export { getTmpFolderPath, getFixture };

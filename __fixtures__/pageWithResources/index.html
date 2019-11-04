@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <script src="resource.js"></script>
+  <script src="nested/resource.js"></script>
+  <script src="/root.resource.js"></script>
+  <script src="/one/two/root-nested.js"></script>
+  <script src="//one/two/protocolRelative.js"></script>
+  <script src="//b.com/protocolRelativeOtherURL.js"></script>
+  <script src="404.js"></script>
+  <script src="500.js"></script>
+  <script src="http://a.com/non_nested_absolute.js"></script>
+  <script src="http://a.com/nested/absolute_resource.js"></script>
+  <link href="http://a.com/resource.css"/>
+  <title>Page with resources</title>
+</head>
+<body>
+  <img src="resource.jpg">
+</body>
+</html>

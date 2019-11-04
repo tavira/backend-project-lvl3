@@ -1,3 +1,3 @@
-import savePageToFolder from './savePageToFolder';
+import downloadPageWithResources from './downloadPageWithResources';
 
-export default (url, folder) => savePageToFolder(url, folder);
+export default downloadPageWithResources;
