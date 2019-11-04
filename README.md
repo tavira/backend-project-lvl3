@@ -6,7 +6,7 @@
 Tool for download page from the specified URL
 
 Prerequisites:
-1. Node.js is installed
+1. Node.js >= 12.9.0 is installed
 2. npm is installed
 
 Installation:
@@ -14,8 +14,7 @@ Installation:
 2. Extract and move to extracted folder
 3. Open terminal and run command: 
 ```bash
-npm run build
-npm link
+make install-app
 ```
 4. Run command:
 ```bash
