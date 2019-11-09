@@ -1,3 +1,5 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`error situations save page to forbidden directory 1`] = `"Error: EACCES: permission denied, access '/'"`;
+
 exports[`error situations save page to unexistent directory 1`] = `"Error: ENOENT: no such file or directory, access '/unexisted_directory'"`;

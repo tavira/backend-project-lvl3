@@ -404,4 +404,15 @@ describe('error situations', () => {
     await expect(downloadPage('http://a.com', dir))
       .rejects.toThrowErrorMatchingSnapshot();
   });
+
+  test('save page to forbidden directory', async () => {
+    const dir = '/';
+    
+    nock(baseURL)
+      .get('/')
+      .reply(200, '');
+    
+    await expect(downloadPage('http://a.com', dir))
+      .rejects.toThrowErrorMatchingSnapshot();
+  });
 });
