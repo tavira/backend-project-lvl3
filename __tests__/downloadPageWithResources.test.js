@@ -390,3 +390,18 @@ describe('other stuff', () => {
     expect(downloadDir).toContain('a-com-ru-all-top10.html');
   });
 });
+
+describe('error situations', () => {
+  const baseURL = /a.com/;
+
+  test('save page to unexistent directory', async () => {
+    const dir = '/unexisted_directory';
+
+    nock(baseURL)
+      .get('/')
+      .reply(200, '');
+    
+    await expect(downloadPage('http://a.com', dir))
+      .rejects.toThrowErrorMatchingSnapshot();
+  });
+});

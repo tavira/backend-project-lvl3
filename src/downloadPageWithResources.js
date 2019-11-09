@@ -1,4 +1,4 @@
-import { promises as fs } from 'fs';
+import { promises as fs, constants } from 'fs';
 import path from 'path';
 import axios from 'axios';
 import debug from 'debug';
@@ -35,8 +35,8 @@ const downloadPageWithResources = (url, dir = __dirname, httpClient) => {
   let pageDomainLinks = [];
   let resourcesDirPathname = null;
 
-  return client
-    .get(url)
+  return fs.access(dir, constants.W_OK)
+    .then(() => client.get(url))
     .then(({ data: downloadedPageContent }) => {
       extractedFromPageLinks = extractLinks(
         downloadedPageContent,
