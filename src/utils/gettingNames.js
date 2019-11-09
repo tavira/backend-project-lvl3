@@ -1,4 +1,9 @@
 import path from 'path';
+import debug from 'debug';
+
+import { name as packageName } from '../../package.json';
+
+const log = debug(packageName);
 
 const replaceNonLettersWithHyphens = s => s.replace(/[\W_]+/g, '-');
 
@@ -38,6 +43,7 @@ const getPathnameForResourceDir = (url, baseDir) => {
 };
 
 const transformToAbsoluteLink = (domainURL, resourceLink) => {
+  log('input resource link - %o', resourceLink);
   const url = new URL(domainURL);
 
   const getTransformType = () => {
@@ -57,6 +63,7 @@ const transformToAbsoluteLink = (domainURL, resourceLink) => {
   };
 
   const transformType = getTransformType();
+  log('link type - %o', transformType);
 
   const transformMapping = {
     backward: () => {
@@ -104,6 +111,7 @@ const transformToAbsoluteLink = (domainURL, resourceLink) => {
   };
 
   const absoluteLink = transformMapping[transformType]();
+  log('output link - %o', absoluteLink);
   return absoluteLink;
 };
 
