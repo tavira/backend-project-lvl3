@@ -21,8 +21,14 @@ make install-app
 page-loader --output /var/tmp https://hexlet.io/courses
 ```
 
+
 Example of usage:
 [![asciicast](https://asciinema.org/a/RLWFv8x8d8urOfvWwyWOqAgLi.svg)](https://asciinema.org/a/RLWFv8x8d8urOfvWwyWOqAgLi)
 
 Example of debug usage:
+
+```
+DEBUG=@tavira/page-loader page-loader --output <dirname> https://hexlet.io/courses
+```
+
 [![asciicast](https://asciinema.org/a/EDbxAz5BWlQ5jfEktHxFYzqXg.svg)](https://asciinema.org/a/EDbxAz5BWlQ5jfEktHxFYzqXg)
