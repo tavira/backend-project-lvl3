@@ -1,6 +1,7 @@
 import { promises as fs } from 'fs';
 import path from 'path';
 import nock from 'nock';
+import axios from 'axios';
 
 import downloadPage from '../src/index';
 import { getTmpFolderPath, getFixture } from './utils';
@@ -394,25 +395,84 @@ describe('other stuff', () => {
 describe('error situations', () => {
   const baseURL = /a.com/;
 
+  let tmpFolder;
+  beforeEach(async () => {
+    tmpFolder = await getTmpFolderPath();
+  });
+
   test('save page to unexistent directory', async () => {
     const dir = '/unexisted_directory';
 
     nock(baseURL)
       .get('/')
       .reply(200, '');
-    
+
     await expect(downloadPage('http://a.com', dir))
       .rejects.toThrowErrorMatchingSnapshot();
   });
 
   test('save page to forbidden directory', async () => {
     const dir = '/';
-    
+
     nock(baseURL)
       .get('/')
       .reply(200, '');
-    
+
     await expect(downloadPage('http://a.com', dir))
+      .rejects.toThrowErrorMatchingSnapshot();
+  });
+
+  test('download the same page into a folder', async () => {
+    const getFixturePathname = getFixture('pageWithResources');
+    const expectedData = await fs.readFile(
+      getFixturePathname('index.html'), 'utf-8',
+    );
+
+    nock(baseURL)
+      .persist()
+      .get('/')
+      .reply(200, expectedData);
+
+    await downloadPage('http://a.com', tmpFolder);
+
+    await expect(downloadPage('http://a.com', tmpFolder))
+      .rejects.toThrowErrorMatchingSnapshot();
+
+    nock.cleanAll();
+  });
+
+  test('download invalid URL', async () => {
+    const url = 'http://non-existing.com';
+    const e = new Error();
+    e.message = 'URL is not found';
+    e.code = 'ENOTFOUND';
+    e.config = { url };
+
+    nock(url)
+      .get('/')
+      .replyWithError(e);
+
+    await expect(downloadPage('http://non-existing.com', tmpFolder))
+      .rejects.toThrowErrorMatchingSnapshot();
+  });
+
+  test('reset download page by timeout', async () => {
+    const client = axios.create({ timeout: 1000 });
+    nock(baseURL)
+      .get('/')
+      .delay(1100)
+      .reply(200, 'ok');
+
+    await expect(downloadPage('http://a.com', tmpFolder, client))
+      .rejects.toThrowErrorMatchingSnapshot();
+  });
+
+  test('page downloading failed (404)', async () => {
+    nock(baseURL)
+      .get('/')
+      .reply(404);
+
+    await expect(downloadPage('http://a.com', tmpFolder))
       .rejects.toThrowErrorMatchingSnapshot();
   });
 });

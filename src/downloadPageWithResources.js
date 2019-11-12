@@ -17,6 +17,18 @@ import { name as packageName } from '../package.json';
 
 const log = debug(packageName);
 
+const isFileNotExisted = pathname => fs.access(pathname, constants.F_OK)
+  .then(() => {
+    const e = new Error();
+    e.errno = -17;
+    e.code = 'EEXIST';
+    e.syscall = 'access';
+    e.path = pathname;
+    e.message = 'This page is already downloaded in the selected directory';
+    throw e;
+  },
+  () => pathname);
+
 const downloadPageWithResources = (url, dir = __dirname, httpClient) => {
   log('given download link - %o', url);
   log('given directory to save -%o', dir);
@@ -27,6 +39,7 @@ const downloadPageWithResources = (url, dir = __dirname, httpClient) => {
   };
 
   const client = httpClient || axios.create({});
+  log('client - %O', client);
 
   const pagePathname = getPathnameToSavePage(url, dir);
   log('computed pathname to save page - %o', pagePathname);
@@ -34,10 +47,13 @@ const downloadPageWithResources = (url, dir = __dirname, httpClient) => {
   let extractedFromPageLinks = [];
   let pageDomainLinks = [];
   let resourcesDirPathname = null;
+  let resourcesDownloadingResults = [];
 
   return fs.access(dir, constants.W_OK)
+    .then(() => isFileNotExisted(pagePathname))
     .then(() => client.get(url))
     .then(({ data: downloadedPageContent }) => {
+      log('downloadedPageContent - %O', downloadedPageContent);
       extractedFromPageLinks = extractLinks(
         downloadedPageContent,
         tagAttrMapping,
@@ -71,6 +87,31 @@ const downloadPageWithResources = (url, dir = __dirname, httpClient) => {
       link, { responseType: 'arraybuffer' },
     )))
     .then(resourcesGetPromises => Promise.allSettled(resourcesGetPromises))
+    .then((promiseResults) => {
+      promiseResults.forEach((r) => {
+        if (r.status === 'rejected') {
+          resourcesDownloadingResults = [
+            ...resourcesDownloadingResults,
+            {
+              url: r.reason.config.url,
+              status: 'not downloaded',
+              error: r.reason,
+            },
+          ];
+        }
+        if (r.status === 'fulfilled') {
+          resourcesDownloadingResults = [
+            ...resourcesDownloadingResults,
+            {
+              url: r.value.config.url,
+              status: 'downloaded',
+              error: '',
+            },
+          ];
+        }
+      });
+      return promiseResults;
+    })
     .then(responses => responses.filter(r => r.status === 'fulfilled'))
     .then(successfulResponses => successfulResponses.map(({ value }) => {
       const resourceLocalName = getFilenameForLocalLink(value.config.url);
@@ -78,18 +119,10 @@ const downloadPageWithResources = (url, dir = __dirname, httpClient) => {
         resourcesDirPathname,
         resourceLocalName,
       );
-      return fs.writeFile(resourcePathname, value.data)
-        .then(() => {
-          log('successful saving of the resource %o to file %o',
-            value.config.url, resourcePathname);
-          console.info(`${value.config.url} downloaded`);
-          return null;
-        });
+      return fs.writeFile(resourcePathname, value.data);
     }))
-    .catch((e) => {
-      console.error(e);
-      throw new Error(e);
-    });
+    .then(writePromises => Promise.allSettled(writePromises))
+    .then(() => resourcesDownloadingResults);
 };
 
 export default downloadPageWithResources;
