@@ -32,3 +32,7 @@ DEBUG=@tavira/page-loader page-loader --output <dirname> https://hexlet.io/cours
 ```
 
 [![asciicast](https://asciinema.org/a/EDbxAz5BWlQ5jfEktHxFYzqXg.svg)](https://asciinema.org/a/EDbxAz5BWlQ5jfEktHxFYzqXg)
+
+Example of error handling:
+
+[![asciicast](https://asciinema.org/a/NGJXI2kMe216Q4BtwM8nHp2Ps.svg)](https://asciinema.org/a/NGJXI2kMe216Q4BtwM8nHp2Ps)
