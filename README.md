@@ -36,3 +36,7 @@ DEBUG=@tavira/page-loader page-loader --output <dirname> https://hexlet.io/cours
 Example of error handling:
 
 [![asciicast](https://asciinema.org/a/NGJXI2kMe216Q4BtwM8nHp2Ps.svg)](https://asciinema.org/a/NGJXI2kMe216Q4BtwM8nHp2Ps)
+
+Add Listr package:
+
+[![asciicast](https://asciinema.org/a/uB3aR8AgNQHiciSHYlKzibiH3.svg)](https://asciinema.org/a/uB3aR8AgNQHiciSHYlKzibiH3)

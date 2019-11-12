@@ -2,6 +2,7 @@ import { promises as fs, constants } from 'fs';
 import path from 'path';
 import axios from 'axios';
 import debug from 'debug';
+import Listr from 'listr';
 
 import { extractLinks, updateLinks } from './utils/pageContent';
 import {
@@ -29,6 +30,16 @@ const isFileNotExisted = pathname => fs.access(pathname, constants.F_OK)
   },
   () => pathname);
 
+const saveResource = (resourcesDirPathname, { url, data }) => {
+  log(resourcesDirPathname);
+  log(url);
+  log(data);
+  const localName = getFilenameForLocalLink(url);
+  const resourcePathname = path.join(resourcesDirPathname, localName);
+  log('path to resource - %O', resourcePathname);
+  return fs.writeFile(resourcePathname, data, 'utf-8');
+};
+
 const downloadPageWithResources = (url, dir = __dirname, httpClient) => {
   log('given download link - %o', url);
   log('given directory to save -%o', dir);
@@ -47,7 +58,6 @@ const downloadPageWithResources = (url, dir = __dirname, httpClient) => {
   let extractedFromPageLinks = [];
   let pageDomainLinks = [];
   let resourcesDirPathname = null;
-  let resourcesDownloadingResults = [];
 
   return fs.access(dir, constants.W_OK)
     .then(() => isFileNotExisted(pagePathname))
@@ -83,46 +93,19 @@ const downloadPageWithResources = (url, dir = __dirname, httpClient) => {
       resourcesDirPathname = getPathForAssets(url, dir);
       return fs.mkdir(resourcesDirPathname);
     })
-    .then(() => pageDomainLinks.map(link => client.get(
-      link, { responseType: 'arraybuffer' },
-    )))
-    .then(resourcesGetPromises => Promise.allSettled(resourcesGetPromises))
-    .then((promiseResults) => {
-      promiseResults.forEach((r) => {
-        if (r.status === 'rejected') {
-          resourcesDownloadingResults = [
-            ...resourcesDownloadingResults,
-            {
-              url: r.reason.config.url,
-              status: 'not downloaded',
-              error: r.reason,
-            },
-          ];
-        }
-        if (r.status === 'fulfilled') {
-          resourcesDownloadingResults = [
-            ...resourcesDownloadingResults,
-            {
-              url: r.value.config.url,
-              status: 'downloaded',
-              error: '',
-            },
-          ];
-        }
-      });
-      return promiseResults;
+    .then(() => {
+      const tasks = new Listr([], { concurrent: true, exitOnError: false });
+      pageDomainLinks.forEach(domainURL => tasks.add({
+        title: `Download - ${domainURL}`,
+        task: () => client.get(domainURL, { responseType: 'arraybuffer' })
+          .then(({ config, data }) => saveResource(
+            resourcesDirPathname, { url: config.url, data },
+          )),
+      }));
+
+      return tasks;
     })
-    .then(responses => responses.filter(r => r.status === 'fulfilled'))
-    .then(successfulResponses => successfulResponses.map(({ value }) => {
-      const resourceLocalName = getFilenameForLocalLink(value.config.url);
-      const resourcePathname = path.resolve(
-        resourcesDirPathname,
-        resourceLocalName,
-      );
-      return fs.writeFile(resourcePathname, value.data);
-    }))
-    .then(writePromises => Promise.allSettled(writePromises))
-    .then(() => resourcesDownloadingResults);
+    .then(tasks => tasks.run().catch(() => { }));
 };
 
 export default downloadPageWithResources;

@@ -10,12 +10,6 @@ program
   .option('--output <value>', 'destination folder')
   .arguments('<url>')
   .action(url => downloadPageWithResources(url, program.output)
-    .then((downloadResults) => {
-      downloadResults.forEach((result) => {
-        console.log(`status ${result.url}: ${result.status} ${result.error}`);
-      });
-      return null;
-    })
     .then(() => console.log('\nPage downloaded'))
     .catch((e) => {
       console.error(e.message);
