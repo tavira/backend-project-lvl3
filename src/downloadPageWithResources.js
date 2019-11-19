@@ -95,6 +95,7 @@ const downloadPageWithResources = (url, dir = __dirname, httpClient) => {
     })
     .then(() => {
       const tasks = new Listr([], { concurrent: true, exitOnError: false });
+      log('pageDomainLinks - %O', pageDomainLinks);
       pageDomainLinks.forEach(domainURL => tasks.add({
         title: `Download - ${domainURL}`,
         task: () => client.get(domainURL, { responseType: 'arraybuffer' })

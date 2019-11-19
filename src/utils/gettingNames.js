@@ -101,6 +101,7 @@ const transformToAbsoluteLink = (domainURL, resourceLink) => {
     relative: () => {
       const pathnameParts = url.pathname.split('/');
       const pathnamePartsForCurrentDir = pathnameParts.slice(0, -1);
+      log('patnameParts - %o', pathnamePartsForCurrentDir);
       const resultingPathname = [
         ...pathnamePartsForCurrentDir,
         resourceLink,

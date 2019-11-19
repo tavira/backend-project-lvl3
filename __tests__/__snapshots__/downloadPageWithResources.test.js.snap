@@ -1,5 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`download invalid URL 1`] = `"URL is not found"`;
+
+exports[`download the same page into a folder 1`] = `"This page is already downloaded in the selected directory"`;
+
 exports[`error situations download invalid URL 1`] = `"URL is not found"`;
 
 exports[`error situations download the same page into a folder 1`] = `"This page is already downloaded in the selected directory"`;
@@ -11,3 +15,11 @@ exports[`error situations reset download page by timeout 1`] = `"timeout of 1000
 exports[`error situations save page to forbidden directory 1`] = `"EACCES: permission denied, access '/'"`;
 
 exports[`error situations save page to unexistent directory 1`] = `"ENOENT: no such file or directory, access '/unexisted_directory'"`;
+
+exports[`page downloading failed (404) 1`] = `"Request failed with status code 404"`;
+
+exports[`reset download page by timeout 1`] = `"timeout of 1000ms exceeded"`;
+
+exports[`save page to forbidden directory 1`] = `"EACCES: permission denied, access '/'"`;
+
+exports[`save page to unexistent directory 1`] = `"ENOENT: no such file or directory, access '/unexisted_directory'"`;
