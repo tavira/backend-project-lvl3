@@ -1,12 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`download invalid URL 1`] = `"URL is not found"`;
-
-exports[`download the same page into a folder 1`] = `"This page is already downloaded in the selected directory"`;
-
 exports[`page downloading failed (404) 1`] = `"Request failed with status code 404"`;
-
-exports[`reset download page by timeout 1`] = `"timeout of 1000ms exceeded"`;
 
 exports[`save page to forbidden directory 1`] = `"EACCES: permission denied, access '/'"`;
 
