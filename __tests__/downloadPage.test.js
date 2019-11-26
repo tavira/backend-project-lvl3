@@ -2,7 +2,7 @@ import { promises as fs } from 'fs';
 import path from 'path';
 import nock from 'nock';
 
-import downloadPage from '../src/index';
+import downloadPage from '../src';
 import { getTmpFolderPath, getFixture } from './utils';
 
 nock.disableNetConnect();
