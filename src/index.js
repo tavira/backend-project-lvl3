@@ -18,7 +18,7 @@ import { name as packageName } from '../package.json';
 
 const log = debug(packageName);
 
-const isFileNotExisted = pathname => fs.access(pathname, constants.F_OK)
+const ensureFileNotExist = pathname => fs.access(pathname, constants.F_OK)
   .then(() => {
     const e = new Error();
     e.errno = -17;
@@ -57,7 +57,7 @@ const downloadPage = (url, dir = __dirname) => {
   let resourcesDirPathname = null;
 
   return fs.access(dir, constants.W_OK)
-    .then(() => isFileNotExisted(pagePathname))
+    .then(() => ensureFileNotExist(pagePathname))
     .then(() => axios.get(url))
     .then(({ data: downloadedPageContent }) => {
       log('downloadedPageContent - %O', downloadedPageContent);
