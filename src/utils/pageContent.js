@@ -1,12 +1,20 @@
 import cheerio from 'cheerio';
+import {
+  transformToAbsoluteLinks,
+  indicatesDomainOrSubdomainPage,
+} from './gettingNames';
 
-const extractLinks = (html, tagAttrMapping) => {
+const extractLinks = (html, tagAttrMapping, domainURL) => {
   const $ = cheerio.load(html);
-  return Object.keys(tagAttrMapping)
+  const sourceLinks = Object.keys(tagAttrMapping)
     .map(t => $.root().find(t).toArray())
     .flat()
     .map(selector => $(selector).attr(tagAttrMapping[selector.tagName]))
     .filter(attr => attr);
+  const links = transformToAbsoluteLinks(domainURL, sourceLinks)
+    .filter(link => indicatesDomainOrSubdomainPage(link, domainURL));
+
+  return links;
 };
 
 const updateLinks = (html, tagAttrMapping, updateFunc) => {

@@ -8,10 +8,8 @@ import { extractLinks, updateLinks } from './utils/pageContent';
 import {
   getPathnameToSavePage,
   getPathForAssets,
-  transformToAbsoluteLinks,
   getPathForLocalLink,
   getFilenameForLocalLink,
-  indicatesDomainOrSubdomainPage,
 } from './utils/gettingNames';
 
 import { name as packageName } from '../package.json';
@@ -52,8 +50,7 @@ const downloadPage = (url, dir = __dirname) => {
   const pagePathname = getPathnameToSavePage(url, dir);
   log('computed pathname to save page - %o', pagePathname);
 
-  let extractedFromPageLinks = [];
-  let pageDomainLinks = [];
+  let resourceLinks = [];
   let resourcesDirPathname = null;
 
   return fs.access(dir, constants.W_OK)
@@ -61,39 +58,26 @@ const downloadPage = (url, dir = __dirname) => {
     .then(() => axios.get(url))
     .then(({ data: downloadedPageContent }) => {
       log('downloadedPageContent - %O', downloadedPageContent);
-      extractedFromPageLinks = extractLinks(
-        downloadedPageContent,
-        tagAttrMapping,
-      );
-      log('extracted links - %O', extractedFromPageLinks);
+      resourceLinks = extractLinks(downloadedPageContent, tagAttrMapping, url);
+      log('extracted links - %O', resourceLinks);
       const updatedPageContent = updateLinks(
         downloadedPageContent,
         tagAttrMapping,
         getPathForLocalLink(url, dir),
       );
-      return updatedPageContent;
+      return fs.writeFile(pagePathname, updatedPageContent, 'utf-8');
     })
-    .then(pageContent => fs.writeFile(pagePathname, pageContent, 'utf-8'))
     .then(() => {
-      const transformedLinks = transformToAbsoluteLinks(url, extractedFromPageLinks);
-      log('transformed links - %O', transformedLinks);
-      return transformedLinks;
-    })
-    .then(absoluteLinks => absoluteLinks.filter(
-      absoluteLink => indicatesDomainOrSubdomainPage(absoluteLink, url),
-    ))
-    .then((domainLinks) => {
-      if (domainLinks.length === 0) {
+      if (resourceLinks.length === 0) {
         return null;
       }
-      pageDomainLinks = domainLinks;
       resourcesDirPathname = getPathForAssets(url, dir);
       return fs.mkdir(resourcesDirPathname);
     })
     .then(() => {
       const tasks = new Listr([], { concurrent: true, exitOnError: false });
-      log('pageDomainLinks - %O', pageDomainLinks);
-      pageDomainLinks.forEach(domainURL => tasks.add({
+      log('pageDomainLinks - %O', resourceLinks);
+      resourceLinks.forEach(domainURL => tasks.add({
         title: `Download - ${domainURL}`,
         task: () => axios.get(domainURL, { responseType: 'arraybuffer' })
           .then(({ config, data }) => saveResource(
